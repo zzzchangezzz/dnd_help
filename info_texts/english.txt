@@ -1,0 +1,24 @@
+﻿You are using discord bot that can help you in "dungeons&dragons" session.
+There are commands:
+
+/roll <dice> - rolls dice; you can use number of faces or use "d20", "d8", etc.
+
+/switch - to switch language between russian and english
+
+/class_list - to see playable classes
+
+/class <name> - to get information about current class
+
+/magic <name> - to get information about current magic spell
+
+/remember <character list> - to set the order of moves, write characters separated by commas
+
+/action - to see the list of moves
+
+/calculate <enemy hp number> <player`s number> - to count the skill points for the battle
+
+/credits - resoursed that were used to make this bot work
+
+/contacts - to have the contacts of developer
+
+/info RU - instrucion in russian
