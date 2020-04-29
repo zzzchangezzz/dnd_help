@@ -3,8 +3,8 @@ import asyncio
 import random
 from discord.ext import commands
 
-
-TOKEN = "Njk4NTYwNDEyODY5ODUzMjU1.Xp3hSw.z1rdqVNsoQSH5sJXWugWZcHu7mo"
+with open('info_texts/bottoken.txt', encoding="utf-8") as f:
+    TOKEN = str(f.read())
 LANG = "RU"
 
 
@@ -74,6 +74,12 @@ class HelperAsk(commands.Cog):
                 await ctx.send(message)
         except:
             pass
+
+    @commands.command(name='contacts')
+    async def rolling(self, ctx):
+        with open('info_texts/dev_cont.txt', encoding="utf-8") as contact:
+            inf = contact.read()
+            await ctx.send(inf)
 
 
 bot = commands.Bot(command_prefix='/')
