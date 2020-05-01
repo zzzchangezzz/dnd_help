@@ -11,7 +11,7 @@ There are commands:
 
 /magic <name> - to get information about current magic spell
 
-/remember <character list> - to set the order of moves, write characters separated by commas
+/remember <character list> - to set the order of moves, characters should be separated by a space, first and last name/number should be written with underscores
 
 /action - to see the list of moves
 

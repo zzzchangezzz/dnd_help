@@ -1,0 +1,6 @@
+﻿This bot uses information from                  https://dungeon.su/
+also translated into english with the help of   https://translate.yandex.ru/
+
+
+Бот использует информацию по игре с сайта   https://dungeon.su/
+Переведено сервисом «Яндекс.Переводчик»     https://translate.yandex.ru/

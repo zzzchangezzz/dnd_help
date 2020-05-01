@@ -30,9 +30,11 @@ class HelperAsk(commands.Cog):
                     inf = f.read()
             else:
                 if LANG == "RU":
-                    inf = '''Используйте '/info RU' или '/info EN' или '/info' для данной команды'''
+                    inf = "Используйте '/info RU' или '/info EN' или '/info'" +\
+                        " для данной команды"
                 if LANG == "EN":
-                    inf = '''Use '/info RU' or '/info EN' or '/info' for this command'''
+                    inf = "Use '/info RU' or '/info EN' or '/info'" +\
+                        " for this command"
             await ctx.send(inf)
         except:
             pass
@@ -76,10 +78,29 @@ class HelperAsk(commands.Cog):
             pass
 
     @commands.command(name='contacts')
-    async def rolling(self, ctx):
-        with open('info_texts/dev_cont.txt', encoding="utf-8") as contact:
-            inf = contact.read()
-            await ctx.send(inf)
+    async def contacted(self, ctx):
+        try:
+            with open('info_texts/dev_cont.txt', encoding="utf-8") as contact:
+                inf = contact.read()
+                await ctx.send(inf)
+        except:
+            pass
+    
+    @commands.command(name='credits')
+    async def creditored(self, ctx):
+        try:
+            with open('info_texts/credits.txt', encoding="utf-8") as f:
+                cred = f.read()
+                await ctx.send(cred)
+        except:
+            pass
+            
+    @commands.command(name='remember')
+    async def act_list(self, ctx, *arguments):
+        den = ""
+        for i in arguments:
+            den += i + " "
+        print(den)
 
 
 bot = commands.Bot(command_prefix='/')
