@@ -1,11 +1,22 @@
 import discord
 import asyncio
 import random
+from flask import Flask
+from data import db_session
+from data.classes import Classes
+from data.spells import Magic
+from flask import render_template
 from discord.ext import commands
 
 with open('info_texts/bottoken.txt', encoding="utf-8") as f:
     TOKEN = str(f.read())
 LANG = "RU"
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'dnd_bot_works'
+db_session.global_init("db/baza.sqlite")
+session = db_session.create_session()
+app.run(port=8080, host='127.0.0.1')
 
 
 class HelperAsk(commands.Cog):
@@ -49,13 +60,13 @@ class HelperAsk(commands.Cog):
             LANG = "RU"
             await ctx.send("Теперь бот говорит по-русски")
 
-    @commands.command(name='roll')
+    @commands.command(name='roll') # бросок кости
     async def rolling(self, ctx, dice):
         global LANG
         try:
             d = int("".join(dice.split("d")))
-            if d < 0:
-                await ctx.send("Impossible")
+            if d <= 0:
+                await ctx.send("Impossible")  # кость без граней
             else:
                 roll = random.randint(1, d)
                 if roll == 1:
@@ -77,7 +88,7 @@ class HelperAsk(commands.Cog):
         except:
             pass
 
-    @commands.command(name='contacts')
+    @commands.command(name='contacts')  # связь
     async def contacted(self, ctx):
         try:
             with open('info_texts/dev_cont.txt', encoding="utf-8") as contact:
@@ -86,7 +97,7 @@ class HelperAsk(commands.Cog):
         except:
             pass
     
-    @commands.command(name='credits')
+    @commands.command(name='credits')  # "особая благодарность"
     async def creditored(self, ctx):
         try:
             with open('info_texts/credits.txt', encoding="utf-8") as f:
@@ -97,10 +108,7 @@ class HelperAsk(commands.Cog):
             
     @commands.command(name='remember')
     async def act_list(self, ctx, *arguments):
-        den = ""
-        for i in arguments:
-            den += i + " "
-        print(den)
+        pass  # временная заглушка
 
 
 bot = commands.Bot(command_prefix='/')
