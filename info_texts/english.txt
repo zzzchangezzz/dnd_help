@@ -3,19 +3,19 @@ There are commands:
 
 /roll <dice> - rolls dice; you can use number of faces or use "d20", "d8", etc.
 
+/potions <d100 result> - shows the effect of mixing potions; if you haven`t rolled d100 or didn`t give the score you have, it will be automatically random generated
+
 /switch - to switch language between russian and english
 
 /class_list - to see playable classes
 
+/magic_list - to see all magic this bot knows
+
+/magic_for <class> - to see magic that character of current class can use
+
 /class <name> - to get information about current class
 
 /magic <name> - to get information about current magic spell
-
-/remember <character list> - to set the order of moves, characters should be separated by a space, first and last name/number should be written with underscores
-
-/action - to see the list of moves
-
-/calculate <enemy hp number> <player`s number> - to count the skill points for the battle
 
 /credits - resoursed that were used to make this bot work
 

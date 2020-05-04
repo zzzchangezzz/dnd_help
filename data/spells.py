@@ -3,6 +3,7 @@ from sqlalchemy import orm
 
 from .db_session import SqlAlchemyBase
 
+
 class Magic(SqlAlchemyBase):
     __tablename__ = 'magic'
 

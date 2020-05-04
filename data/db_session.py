@@ -7,6 +7,7 @@ SqlAlchemyBase = dec.declarative_base()
 
 __factory = None
 
+
 def global_init(db_file):
     global __factory
 
@@ -29,4 +30,4 @@ def global_init(db_file):
 
 def create_session() -> Session:
     global __factory
-    return __factory()    
+    return __factory()
