@@ -153,8 +153,8 @@ class HelperAsk(commands.Cog):
             req = req_beg + mssg
             answer = requests.get(req).json()
             mssg = answer["text"][0]
-            mssg += " \n Переведено сервисом «Яндекс.Переводчик»" \
-                                " https://translate.yandex.ru/"
+            mssg += " \n Переведено сервисом «Яндекс.Переводчик» " \
+                    "https://translate.yandex.ru/"
         await ctx.send(mssg)
 
     @commands.command(name='class_list')
@@ -292,7 +292,6 @@ class HelperAsk(commands.Cog):
                 else:
                     mssg = str(mc)
             await ctx.send(mssg)
-        
 
 
 bot = commands.Bot(command_prefix='/')
