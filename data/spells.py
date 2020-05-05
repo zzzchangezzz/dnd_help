@@ -18,7 +18,7 @@ class Magic(SqlAlchemyBase):
     content = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     
     def __repr__(self):
-        return self.title + "\n Уровень: " + self.level + "\n Дистанция: " + \
-               self.distance + "\n Компоненты: " + self.components +\
-               "\n Длительность:" + self.durability + "\n Классы: " +\
-               self.classes + "\n Описание: \n" + self.content
+        return self.title + "\nУровень: " + self.level + "\nДистанция: " + \
+               self.distance + "\nКомпоненты: " + self.components +\
+               "\nДлительность:" + self.durability + "\nКлассы: " +\
+               self.classes + "\nОписание: \n" + self.content

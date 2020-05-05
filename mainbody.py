@@ -17,11 +17,8 @@ API_key = "trnsl.1.1.20200504T185824Z.76b4157e101f4" \
 req_beg = "https://translate.yandex.net/api/v1.5/tr.json/translate?lang=ru-en&key=" +\
           API_key + "&text="
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'dnd_bot_works'
 db_session.global_init("db/baza.sqlite")
 session = db_session.create_session()
-app.run(port=8080, host='127.0.0.1')
 
 
 class HelperAsk(commands.Cog):
@@ -115,9 +112,14 @@ class HelperAsk(commands.Cog):
     async def mixed_potions(self, ctx, result=None):
         global LANG
         mssg = ""
-        if result is None or result < 1 or result > 100:
+        if result is None:
             result = random.randint(1, 100)
-            mssg = "Результат броска: " + result + ". "
+            mssg = "Результат броска: " + str(result) + ". "
+        elif not result.isdigit() or int(result) > 100:
+            result = random.randint(1, 100)
+            mssg = "Некорректные данные. Результат броска: " + str(result) + ". "
+        
+        result = int(result)
         if result == 1:
             mssg += "Смесь взрывается, причиняя экспериментатору урон силовым полем 6d10, а также урон" \
                     " силовым полем 1d10 всем существам в пределах 5 фт. от него."
@@ -151,6 +153,8 @@ class HelperAsk(commands.Cog):
             req = req_beg + mssg
             answer = requests.get(req).json()
             mssg = answer["text"][0]
+            mssg += " \n Переведено сервисом «Яндекс.Переводчик»" \
+                                " https://translate.yandex.ru/"
         await ctx.send(mssg)
 
     @commands.command(name='class_list')
@@ -170,16 +174,125 @@ class HelperAsk(commands.Cog):
         await ctx.send(mgc)
 
     @commands.command(name='magic_for')
-    async def spells_list(self, ctx, cl_m):
+    async def spells_clss(self, ctx, cl_m):
         global session
+        global LANG
         try:
+            # перевод на русский для соответствия бд (если запрос на русском ничего не изменится)
+            asked = "https://translate.yandex.net/api/v1.5/tr.json/translate?"\
+                "lang=en-ru&key=" + API_key + "&text=" + cl_m
+            answer = requests.get(asked).json()
+            cl_m = answer["text"][0]
             mgc = ""
-            n = cl_m[1].upper() + cl_m[1:].lower()
-            hreq = "%{}%".format(n)
+            n = cl_m[0].upper() + cl_m[1:].lower()
+            hreq = '%{}%'.format(n)
             for m in session.query(Magic).filter(Magic.classes.like(hreq)).all():
-                mgc += m.title + "\n"
+                if LANG == "EN":
+                    req = req_beg + m.title
+                    answer = requests.get(req).json()
+                    mgc += answer["text"][0] + "\n"
+                else:
+                    mgc += m.title + "\n"
+            if mgc == "":
+                if LANG == "EN":
+                    mgc = "Bot doesn`t know spells for this class."
+                else:
+                    mgc = "Бот не знает заклинаний для этого класса."
+            await ctx.send(mgc)
         except:
             pass
+    
+    @commands.command(name='class')
+    async def class_info(self, ctx, name=None):
+        global session, LANG
+        if name is None:
+            if LANG == "EN":
+                await ctx.send("command should be like: /class <name>")
+            else:
+                await ctx.send("шаблон команды: /class <название>")
+        else:
+            n = "%" + name + "%"
+            brd = session.query(Classes).filter(Classes.title.like(n)).first()
+            mssg = ""
+            if brd is None:
+                if LANG == "EN":
+                    mssg += "Unfortunately, bot doesn`t know this class. "\
+                        "Check if you`ve written it correctly."
+                else:
+                    mssg += "К сожалению, бот не знает этот класс. Проверьте"\
+                        " правильность написания."
+            else:
+                if LANG == "EN":
+                    req = req_beg + str(brd.title)
+                    answer = requests.get(req).json()
+                    mssg = answer["text"][0] + "\n"
+                    stppd = str(brd.content).split(".")
+                    for i in stppd:
+                        if i != "":
+                            req = req_beg + i
+                            answer = requests.get(req).json()
+                            mssg += answer["text"][0]
+                        mssg += "."
+                    mssg += "\nПереведено сервисом «Яндекс.Переводчик»" \
+                            " https://translate.yandex.ru/"
+                else:
+                    mssg += str(brd)
+            await ctx.send(mssg)
+        
+    @commands.command(name='magic')
+    async def spell_info(self, ctx, *name):
+        global session, LANG
+        if not name:
+            if LANG == "EN":
+                await ctx.send("command should be like: /magic <title>")
+            else:
+                await ctx.send("шаблон команды: /magic <название>")
+        else:
+            name = " ".join(list(name))
+            n = "%" + name + "%"
+            mc = session.query(Magic).filter(Magic.title.like(n)).first()
+            mssg = ""
+            if mc is None:
+                if LANG == "EN":
+                    mssg += "Unfortunately, bot does not know this spell. "\
+                        "Check if you haveve written it correctly."
+                else:
+                    mssg += "К сожалению, бот не знает это заклинание."\
+                        " Проверьте правильность написания."
+            else:
+                if LANG == "EN":
+                    req = req_beg + str(mc.title)
+                    answer = requests.get(req).json()
+                    mssg = answer["text"][0] + "\n"
+                    req = req_beg + str(mc.level)
+                    answer = requests.get(req).json()
+                    mssg += "Level: " + answer["text"][0] + "\n"
+                    req = req_beg + str(mc.distance)
+                    answer = requests.get(req).json()
+                    mssg += "Distance: " + answer["text"][0] + "\n"
+                    req = req_beg + str(mc.components)
+                    answer = requests.get(req).json()
+                    mssg += "Components: " + answer["text"][0] + "\n"
+                    req = req_beg + str(mc.durability)
+                    answer = requests.get(req).json()
+                    mssg += "Durability: " + answer["text"][0] + "\n"
+                    req = req_beg + str(mc.classes)
+                    answer = requests.get(req).json()
+                    mssg += "Classes: " + answer["text"][0] + "\n"
+                    sed = str(mc.content).split(".")
+                    for j in sed:
+                        if j != "":
+                            req = req_beg + j
+                            answer = requests.get(req).json()
+                            mssg += answer["text"][0]
+                        mssg += "."
+                    mssg += "\nПереведено сервисом «Яндекс.Переводчик»" \
+                         " https://translate.yandex.ru/"
+                        
+                else:
+                    mssg = str(mc)
+            await ctx.send(mssg)
+        
 
 
 bot = commands.Bot(command_prefix='/')
