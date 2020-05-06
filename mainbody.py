@@ -2,12 +2,10 @@ import discord
 import asyncio
 import requests
 import random
-from flask import Flask
 from data import db_session
 from data.classes import Classes
 from data.spells import Magic
 from data.races import Races
-from flask import render_template
 from discord.ext import commands
 
 with open('info_texts/bottoken.txt', encoding="utf-8") as f:
