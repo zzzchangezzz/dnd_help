@@ -6,6 +6,7 @@ from flask import Flask
 from data import db_session
 from data.classes import Classes
 from data.spells import Magic
+from data.races import Races
 from flask import render_template
 from discord.ext import commands
 
@@ -14,8 +15,8 @@ with open('info_texts/bottoken.txt', encoding="utf-8") as f:
 LANG = "RU"
 API_key = "trnsl.1.1.20200504T185824Z.76b4157e101f4" \
           "9ef.04aa3ed94a537b2f4d449f3a5eabd9da5f3c10d2"
-req_beg = "https://translate.yandex.net/api/v1.5/tr.json/translate?lang=ru-en&key=" +\
-          API_key + "&text="
+req_beg = "https://translate.yandex.net/api/v1.5/tr.json/" \
+          "translate?lang=ru-en&key=" + API_key + "&text="
 
 db_session.global_init("db/baza.sqlite")
 session = db_session.create_session()
@@ -26,7 +27,7 @@ class HelperAsk(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='info')
+    @commands.command(name='info')  # помощь
     async def information(self, ctx, lang=None):
         global LANG
         if lang is None:
@@ -43,8 +44,8 @@ class HelperAsk(commands.Cog):
                     inf = f.read()
             else:
                 if LANG == "RU":
-                    inf = "Используйте '/info RU' или '/info EN' или '/info'" \
-                          " для данной команды"
+                    inf = "Используйте '/info RU' или '/info EN' или " \
+                          "'/info' для данной команды"
                 if LANG == "EN":
                     inf = "Use '/info RU' or '/info EN' or '/info'" \
                           " for this command"
@@ -52,7 +53,7 @@ class HelperAsk(commands.Cog):
         except:
             pass
 
-    @commands.command(name='switch')
+    @commands.command(name='switch')  # смена языка
     async def language(self, ctx):
         global LANG
         if LANG == "RU":
@@ -98,7 +99,7 @@ class HelperAsk(commands.Cog):
                 await ctx.send(inf)
         except:
             pass
-    
+
     @commands.command(name='credits')  # "особая благодарность"
     async def creditored(self, ctx):
         try:
@@ -107,8 +108,81 @@ class HelperAsk(commands.Cog):
                 await ctx.send(cred)
         except:
             pass
+
+    @commands.command(name='form')  # основные формулы
+    async def formulas(self, ctx):
+        global LANG
+        try:
+            pathway = 'info_texts/main_formulas.txt'
+            if LANG == "EN":
+                pathway = 'info_texts/main_formulas_en.txt'
+            with open(pathway, encoding="utf-8") as fl:
+                cred = fl.read()
+                await ctx.send(cred)
+        except:
+            pass
     
-    @commands.command(name='potions')
+    @commands.command(name='check')  # проверка характеристики
+    async def checkmod(self, ctx, chrc=None):
+        global LANG
+        if chrc is None:
+            if LANG == "EN":
+                await ctx.send("command should be like /check <number>")
+            else:
+                await ctx.send("команда должна иметь вид /check <число>")
+        else:
+            if chrc.isdigit():
+                a = int(chrc)
+                modif = (a - 10) // 2
+                if modif > 0:
+                    modif = "+" + str(modif)
+                else:
+                    modif = str(modif)
+                if LANG == "EN":
+                    await ctx.send("Modifier is " + modif)
+                else:
+                    await ctx.send("Модификатор " + modif)
+            else:
+                if LANG == "EN":
+                    await ctx.send("please enter the characteristic`s index")
+                else:
+                    await ctx.send("пожалуйста укажите характеристику числом")
+    
+    @commands.command(name='link')  # ссылки на сайт для рассчёта
+    async def linked_in(self, ctx, *args):
+        global LANG
+        lt = "https://dungeon.su/loot/"
+        s = "https://dungeon.su/scrolls/"
+        b = "https://dungeon.su/encounter_difficulty/"
+        kfm = list(args)
+        message = ""
+        if not kfm:
+            if LANG == "EN":
+                message = "command needs keys (b - battle difficulty," \
+                          " s - scrolls generation, l - loot generation)"
+            else:
+                message = "команде нужны ключи (b - сложность боя," \
+                          " s - генератор свитков, l - генератор добычи)"
+        else:
+            for i in kfm:
+                if i == "l":
+                    if LANG == "EN":
+                        message += "Loot: " + lt + "\n"
+                    else:
+                        message += "Добыча:" + lt + "\n"
+                if i == "s":
+                    if LANG == "EN":
+                        message += "Scrolls: " + s + "\n"
+                    else:
+                        message += "Свитки:" + s + "\n"
+                if i == "b":
+                    if LANG == "EN":
+                        message += "Battle difficulty: " + b + "\n"
+                    else:
+                        message += "Сложность боя:" + b + "\n"
+        await ctx.send(message)
+    
+    @commands.command(name='potions')  # результат смешения зелий
     async def mixed_potions(self, ctx, result=None):
         global LANG
         mssg = ""
@@ -117,12 +191,14 @@ class HelperAsk(commands.Cog):
             mssg = "Результат броска: " + str(result) + ". "
         elif not result.isdigit() or int(result) > 100:
             result = random.randint(1, 100)
-            mssg = "Некорректные данные. Результат броска: " + str(result) + ". "
-        
+            mssg = "Некорректные данные. Результат броска: " + \
+                   str(result) + ". "
+
         result = int(result)
         if result == 1:
-            mssg += "Смесь взрывается, причиняя экспериментатору урон силовым полем 6d10, а также урон" \
-                    " силовым полем 1d10 всем существам в пределах 5 фт. от него."
+            mssg += "Смесь взрывается, причиняя экспериментатору урон силовым" \
+                    " полем 6d10, а также урон силовым полем 1d10 всем существам" \
+                    " в пределах 5 фт. от него."
         elif 1 < result <= 8:
             mssg += "Смесь становится поглощаемым ядом по выбору Мастера."
         elif 8 < result <= 15:
@@ -131,14 +207,15 @@ class HelperAsk(commands.Cog):
             mssg += "Одно из зелий теряет свои свойства."
         elif 25 < result <= 35:
             mssg += "Оба зелья продолжают работать, но их численные эффекты" \
-                    " снижаются наполовину. Если в силу особенностей зелья эффект" \
-                    " нельзя понизить, то зелье не работает."
+                    " снижаются наполовину. Если в силу особенностей зелья" \
+                    " эффект нельзя понизить, то зелье не работает."
         elif 35 < result <= 90:
             mssg += "Оба зелья работают нормально"
         elif 90 < result <= 99:
-            mssg += "Численные эффекты и длительность действия одного из зелий удваиваются." \
-                    " Если ни одно зелье не может быть модифицировано таким образом, то в этом" \
-                    " случае они работают как обычно."
+            mssg += "Численные эффекты и длительность действия одного из " \
+                    "зелий удваиваются. Если ни одно зелье не может быть" \
+                    " модифицировано таким образом, то в этом случае они" \
+                    " работают как обычно."
         elif result == 100:
             mssg += "Только одно зелье продолжает работать, но его эффект" \
                     " становится постоянным. Выберите наиболее простой эффект" \
@@ -146,9 +223,9 @@ class HelperAsk(commands.Cog):
                     " который кажется вам наиболее забавным. Например, зелье" \
                     " лечения может увеличить максимум хитов на 4, а масло" \
                     " эфирности может навсегда заточить персонажа на Эфирном" \
-                    " Плане. На ваше усмотрение, назначьте заклинание, такое как" \
-                    " рассеивание магии или снятие проклятья, которое может рассеять" \
-                    " этот длительный эффект."
+                    " Плане. На ваше усмотрение, назначьте заклинание, такое" \
+                    " как рассеивание магии или снятие проклятья, которое" \
+                    " может рассеять этот длительный эффект."
         if LANG == "EN":
             req = req_beg + mssg
             answer = requests.get(req).json()
@@ -157,15 +234,15 @@ class HelperAsk(commands.Cog):
                     "https://translate.yandex.ru/"
         await ctx.send(mssg)
 
-    @commands.command(name='class_list')
+    @commands.command(name='class_list')  # список классов
     async def classes_list(self, ctx):
         global session
         cl = ""
         for clas in session.query(Classes).all():
             cl += clas.title + "\n"
         await ctx.send(cl)
-    
-    @commands.command(name='magic_list')
+
+    @commands.command(name='magic_list')  # список заклинаний
     async def spells_list(self, ctx):
         global session
         mgc = ""
@@ -173,20 +250,21 @@ class HelperAsk(commands.Cog):
             mgc += spl.title + "\n"
         await ctx.send(mgc)
 
-    @commands.command(name='magic_for')
+    @commands.command(name='magic_for')  # список заклинаний для данного класса
     async def spells_clss(self, ctx, cl_m):
         global session
         global LANG
         try:
-            # перевод на русский для соответствия бд (если запрос на русском ничего не изменится)
-            asked = "https://translate.yandex.net/api/v1.5/tr.json/translate?"\
-                "lang=en-ru&key=" + API_key + "&text=" + cl_m
+            # перевод на русский для соответствия бд
+            asked = "https://translate.yandex.net/api/v1.5/tr.json/translate?" \
+                    "lang=en-ru&key=" + API_key + "&text=" + cl_m
             answer = requests.get(asked).json()
             cl_m = answer["text"][0]
             mgc = ""
             n = cl_m[0].upper() + cl_m[1:].lower()
             hreq = '%{}%'.format(n)
-            for m in session.query(Magic).filter(Magic.classes.like(hreq)).all():
+            for m in\
+                    session.query(Magic).filter(Magic.classes.like(hreq)).all():
                 if LANG == "EN":
                     req = req_beg + m.title
                     answer = requests.get(req).json()
@@ -195,32 +273,32 @@ class HelperAsk(commands.Cog):
                     mgc += m.title + "\n"
             if mgc == "":
                 if LANG == "EN":
-                    mgc = "Bot doesn`t know spells for this class."
+                    mgc = "Bot does not know spells for this class."
                 else:
                     mgc = "Бот не знает заклинаний для этого класса."
             await ctx.send(mgc)
         except:
             pass
-    
-    @commands.command(name='class')
-    async def class_info(self, ctx, name=None):
+
+    @commands.command(name='class')  # описание класса
+    async def class_info(self, ctx, ttl=None):
         global session, LANG
-        if name is None:
+        if ttl is None:
             if LANG == "EN":
                 await ctx.send("command should be like: /class <name>")
             else:
                 await ctx.send("шаблон команды: /class <название>")
         else:
-            n = "%" + name + "%"
+            n = "%" + ttl + "%"
             brd = session.query(Classes).filter(Classes.title.like(n)).first()
             mssg = ""
             if brd is None:
                 if LANG == "EN":
-                    mssg += "Unfortunately, bot doesn`t know this class. "\
-                        "Check if you`ve written it correctly."
+                    mssg += "Unfortunately, bot does not know this class. " \
+                            "Check if you`ve written it correctly."
                 else:
-                    mssg += "К сожалению, бот не знает этот класс. Проверьте"\
-                        " правильность написания."
+                    mssg += "К сожалению, бот не знает этот класс. Проверьте" \
+                            " правильность написания."
             else:
                 if LANG == "EN":
                     req = req_beg + str(brd.title)
@@ -238,8 +316,8 @@ class HelperAsk(commands.Cog):
                 else:
                     mssg += str(brd)
             await ctx.send(mssg)
-        
-    @commands.command(name='magic')
+
+    @commands.command(name='magic')  # описание заклинания
     async def spell_info(self, ctx, *name):
         global session, LANG
         if not name:
@@ -254,11 +332,11 @@ class HelperAsk(commands.Cog):
             mssg = ""
             if mc is None:
                 if LANG == "EN":
-                    mssg += "Unfortunately, bot does not know this spell. "\
-                        "Check if you haveve written it correctly."
+                    mssg += "Unfortunately, bot does not know this spell. " \
+                            "Check if you have written it correctly."
                 else:
-                    mssg += "К сожалению, бот не знает это заклинание."\
-                        " Проверьте правильность написания."
+                    mssg += "К сожалению, бот не знает это заклинание." \
+                            " Проверьте правильность написания."
             else:
                 if LANG == "EN":
                     req = req_beg + str(mc.title)
@@ -287,10 +365,55 @@ class HelperAsk(commands.Cog):
                             mssg += answer["text"][0]
                         mssg += "."
                     mssg += "\nПереведено сервисом «Яндекс.Переводчик»" \
-                         " https://translate.yandex.ru/"
-                        
+                            " https://translate.yandex.ru/"
+
                 else:
                     mssg = str(mc)
+            await ctx.send(mssg)
+
+    @commands.command(name='race_list')  # список рас
+    async def races_list(self, ctx):
+        global session
+        rc = ""
+        for race in session.query(Races).all():
+            rc += race.name + "\n"
+        await ctx.send(rc)
+
+    @commands.command(name='race')  # описание расы
+    async def race_info(self, ctx, nick=None):
+        global session, LANG
+        if nick is None:
+            if LANG == "EN":
+                await ctx.send("command should be like: /race <name>")
+            else:
+                await ctx.send("шаблон команды: /race <название>")
+        else:
+            n = "%" + nick + "%"
+            r_inf = session.query(Races).filter(Races.name.like(n)).first()
+            mssg = ""
+            if r_inf is None:
+                if LANG == "EN":
+                    mssg += "Unfortunately, bot does not know this race. " \
+                            "Check if you have written it correctly."
+                else:
+                    mssg += "К сожалению, бот не знает эту расу. Проверьте" \
+                            " правильность написания."
+            else:
+                if LANG == "EN":
+                    req = req_beg + str(r_inf.name)
+                    answer = requests.get(req).json()
+                    mssg = answer["text"][0] + "\n"
+                    stppd = str(r_inf.description).split(".")
+                    for i in stppd:
+                        if i != "":
+                            req = req_beg + i
+                            answer = requests.get(req).json()
+                            mssg += answer["text"][0]
+                        mssg += "."
+                    mssg += "\nПереведено сервисом «Яндекс.Переводчик»" \
+                            " https://translate.yandex.ru/"
+                else:
+                    mssg += str(r_inf)
             await ctx.send(mssg)
 
 

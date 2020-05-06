@@ -1,0 +1,37 @@
+﻿Characteristic modifier: (Characteristic-10) / 2.
+Rounding down.
+
+
+Melee attack: 1d20 + Skill + STRENGTH (DEXTERITY for fine weapons)
+
+
+Melee damage: Weapon bone + STRENGTH (DEXTERITY for fine weapons)
+
+
+Ranged attack: 1d20 + Skill + DEXTERITY (STRENGTH for throwing weapons)
+
+
+Ranged damage: Weapon bone + DEXTERITY (STRENGTH for throwing weapons)
+
+
+Spell attack: 1d20 + Skill + A modifier of characteristics of the creation spells
+
+
+Spell damage: individual for each spell
+
+
+Spell saving throw difficulty: 8 + character Modifier + Skill
+
+
+
+Save throw: 1d20 + Characteristic modifier
+
+
+Order of moves in battle: 1d20 + Initiative (DEXTERITY)
+
+
+Passive mindfulness: 10 + WISDOM (Mindfulness)
+Stabilization of the dying: 1d20 + WISDOM (Medicine) - STRENGTH: 10
+
+
+Tool usage: 1d20 + Characteristic modifier (DM level) + Skill

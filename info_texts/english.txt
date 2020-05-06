@@ -7,15 +7,25 @@ There are commands:
 
 /switch - to switch language between russian and english
 
+/form - main formulas for game
+
+/check - to calculate the characteristic modifier
+
+/link <keys> - links to online calculator for d&d; keys: b - battle difficulty,s - scrolls generation, l - loot generation
+
 /class_list - to see playable classes
 
 /magic_list - to see all magic this bot knows
+
+/race_list - to see playable races
 
 /magic_for <class> - to see magic that character of current class can use
 
 /class <name> - to get information about current class
 
 /magic <name> - to get information about current magic spell
+
+/race <name> - to get information about current race
 
 /credits - resoursed that were used to make this bot work
 
