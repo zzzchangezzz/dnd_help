@@ -17,6 +17,8 @@ class Magic(SqlAlchemyBase):
     classes = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     
+    connect = orm.relation("Connection", back_populates='magic')
+    
     def __repr__(self):
         return self.title + "\nУровень: " + self.level + "\nДистанция: " + \
                self.distance + "\nКомпоненты: " + self.components +\

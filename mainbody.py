@@ -6,6 +6,7 @@ from data import db_session
 from data.classes import Classes
 from data.spells import Magic
 from data.races import Races
+from data.connector import Connection
 from discord.ext import commands
 
 with open('info_texts/bottoken.txt', encoding="utf-8") as f:
@@ -249,32 +250,36 @@ class HelperAsk(commands.Cog):
         await ctx.send(mgc)
 
     @commands.command(name='magic_for')  # список заклинаний для данного класса
-    async def spells_clss(self, ctx, cl_m):
+    async def spells_clss(self, ctx, cl_m=None):
         global session
         global LANG
         try:
-            # перевод на русский для соответствия бд
-            asked = "https://translate.yandex.net/api/v1.5/tr.json/translate?" \
-                    "lang=en-ru&key=" + API_key + "&text=" + cl_m
-            answer = requests.get(asked).json()
-            cl_m = answer["text"][0]
-            mgc = ""
-            n = cl_m[0].upper() + cl_m[1:].lower()
-            hreq = '%{}%'.format(n)
-            for m in\
-                    session.query(Magic).filter(Magic.classes.like(hreq)).all():
+            if cl_m is None:
                 if LANG == "EN":
-                    req = req_beg + m.title
-                    answer = requests.get(req).json()
-                    mgc += answer["text"][0] + "\n"
+                    await ctx.send("Need parameter of class")
                 else:
-                    mgc += m.title + "\n"
-            if mgc == "":
-                if LANG == "EN":
-                    mgc = "Bot does not know spells for this class."
+                    await ctx.send("Нужно указывать класс")
+            else:
+                # перевод на русский для соответствия бд
+                asked = "https://translate.yandex.net/api/v1.5/tr." \
+                        "json/translate?lang=en-ru&key=" + API_key + "&text=" + cl_m
+                answer = requests.get(asked).json()
+                cl_m = answer["text"][0]
+                n = cl_m[0].upper() + cl_m[1:].lower()
+                hreq = '%{}%'.format(n)
+                cl_id = session.query(Classes).filter(Classes.title.like(hreq)).first()
+                mssg = ""
+                if cl_id is not None:
+                    con = session.query(Connection).filter(Connection.class_id == cl_id.id).all()
+                    for i in con:
+                        mgcl = session.query(Magic).get(i.spell_id)
+                        mssg += mgcl.title + "\n"
                 else:
-                    mgc = "Бот не знает заклинаний для этого класса."
-            await ctx.send(mgc)
+                    if LANG == "EN":
+                        mssg += "Bot does not know spells for this class."
+                    else:
+                        mssg += "Бот не знает заклинаний для этого класса."
+                await ctx.send(mssg)
         except:
             pass
 

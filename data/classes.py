@@ -12,5 +12,7 @@ class Classes(SqlAlchemyBase):
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     
+    connect = orm.relation("Connection", back_populates='classes')
+    
     def __repr__(self):
         return self.title + "\n" + self.content + "\n"

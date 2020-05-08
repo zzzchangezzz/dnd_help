@@ -1,34 +1,34 @@
 ﻿You are using discord bot that can help you in "dungeons&dragons" session.
 There are commands:
 
-/roll <dice> - rolls dice; you can use number of faces or use "d20", "d8", etc.
+`/roll <dice>` - rolls dice; you can use number of faces or use "d20", "d8", etc.
 
-/potions <d100 result> - shows the effect of mixing potions; if you haven`t rolled d100 or didn`t give the score you have, it will be automatically random generated
+`/potions <d100 result>` - shows the effect of mixing potions; if you haven`t rolled d100 or didn`t give the score you have, it will be automatically random generated
 
-/switch - to switch language between russian and english
+`/switch` - to switch language between russian and english
 
-/form - main formulas for game
+`/form` - main formulas for game
 
-/check - to calculate the characteristic modifier
+`/check` - to calculate the characteristic modifier
 
-/link <keys> - links to online calculator for d&d; keys: b - battle difficulty,s - scrolls generation, l - loot generation
+`/link <keys>` - links to online calculator for d&d; keys: b - battle difficulty,s - scrolls generation, l - loot generation
 
-/class_list - to see playable classes
+`/class_list` - to see playable classes
 
-/magic_list - to see all magic this bot knows
+`/magic_list` - to see all magic this bot knows
 
-/race_list - to see playable races
+`/race_list` - to see playable races
 
-/magic_for <class> - to see magic that character of current class can use
+`/magic_for <class>` - to see magic that character of current class can use
 
-/class <name> - to get information about current class
+`/class <name>` - to get information about current class
 
-/magic <name> - to get information about current magic spell
+`/magic <name>` - to get information about current magic spell
 
-/race <name> - to get information about current race
+`/race <name>` - to get information about current race
 
-/credits - resoursed that were used to make this bot work
+`/credits` - resoursed that were used to make this bot work
 
-/contacts - to have the contacts of developer
+`/contacts` - to have the contacts of developer
 
-/info RU - instrucion in russian
+`/info RU` - instrucion in russian
