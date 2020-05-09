@@ -50,7 +50,7 @@ class HelperAsk(commands.Cog):
                           " for this command"
             await ctx.send(inf)
         except:
-            pass
+            await ctx.send("Unexpected error")
 
     @commands.command(name='switch')  # смена языка
     async def language(self, ctx):
@@ -63,41 +63,52 @@ class HelperAsk(commands.Cog):
             await ctx.send("Теперь бот говорит по-русски")
 
     @commands.command(name='roll')  # бросок кости
-    async def rolling(self, ctx, dice):
+    async def rolling(self, ctx, dice=None):
         global LANG
         try:
-            d = int("".join(dice.split("d")))
-            if d <= 0:
-                await ctx.send("Impossible")  # кость без граней
-            else:
-                roll = random.randint(1, d)
-                if roll == 1:
-                    if LANG == "RU":
-                        message = "Выпало 1. Критическая неудача"
-                    else:
-                        message = "Rolled 1. Critical failure"
-                elif roll == d:
-                    if LANG == "RU":
-                        message = "Выпало " + str(roll) + ". Критический успех"
-                    else:
-                        message = "Rolled " + str(roll) + ". Critical success"
+            if dice is None or dice.isalpha():
+                if LANG == "EN":
+                    await ctx.send("Need dice number")
                 else:
-                    if LANG == "RU":
-                        message = "Выпало " + str(roll)
+                    await ctx.send("Нужен номер кости")
+            else:
+                d = int("".join(dice.split("d")))
+                if d <= 0:
+                    await ctx.send("Impossible")  # кость без граней
+                else:
+                    roll = random.randint(1, d)
+                    if roll == 1:
+                        if LANG == "RU":
+                            message = "Выпало 1. Критическая неудача"
+                        else:
+                            message = "Rolled 1. Critical failure"
+                    elif roll == d:
+                        if LANG == "RU":
+                            message = "Выпало " + str(roll) + \
+                                      ". Критический успех"
+                        else:
+                            message = "Rolled " + str(roll) +\
+                                      ". Critical success"
                     else:
-                        message = "Rolled " + str(roll)
-                await ctx.send(message)
+                        if LANG == "RU":
+                            message = "Выпало " + str(roll)
+                        else:
+                            message = "Rolled " + str(roll)
+                    await ctx.send(message)
         except:
-            pass
+            if LANG == "EN":
+                await ctx.send("Incorrect dice")
+            else:
+                await ctx.send("Некорректная кость")
 
-    @commands.command(name='contacts')  # связь
+    @commands.command(name='contacts')  # контакты
     async def contacted(self, ctx):
         try:
             with open('info_texts/dev_cont.txt', encoding="utf-8") as contact:
                 inf = contact.read()
                 await ctx.send(inf)
         except:
-            pass
+            await ctx.send("Unexpected error")
 
     @commands.command(name='credits')  # "особая благодарность"
     async def creditored(self, ctx):
@@ -106,7 +117,7 @@ class HelperAsk(commands.Cog):
                 cred = fl.read()
                 await ctx.send(cred)
         except:
-            pass
+            await ctx.send("Unexpected error")
 
     @commands.command(name='form')  # основные формулы
     async def formulas(self, ctx):
@@ -119,8 +130,8 @@ class HelperAsk(commands.Cog):
                 cred = fl.read()
                 await ctx.send(cred)
         except:
-            pass
-    
+            await ctx.send("Unexpected error")
+
     @commands.command(name='check')  # проверка характеристики
     async def checkmod(self, ctx, chrc=None):
         global LANG
@@ -146,7 +157,7 @@ class HelperAsk(commands.Cog):
                     await ctx.send("please enter the characteristic`s index")
                 else:
                     await ctx.send("пожалуйста укажите характеристику числом")
-    
+
     @commands.command(name='link')  # ссылки на сайт для рассчёта
     async def linked_in(self, ctx, *args):
         global LANG
@@ -180,7 +191,7 @@ class HelperAsk(commands.Cog):
                     else:
                         message += "Сложность боя:" + b + "\n"
         await ctx.send(message)
-    
+
     @commands.command(name='potions')  # результат смешения зелий
     async def mixed_potions(self, ctx, result=None):
         global LANG
@@ -195,9 +206,9 @@ class HelperAsk(commands.Cog):
 
         result = int(result)
         if result == 1:
-            mssg += "Смесь взрывается, причиняя экспериментатору урон силовым" \
-                    " полем 6d10, а также урон силовым полем 1d10 всем существам" \
-                    " в пределах 5 фт. от него."
+            mssg += "Смесь взрывается, причиняя экспериментатору урон " \
+                    "силовым полем 6d10, а также урон силовым полем 1d10 всем"\
+                    " существам в пределах 5 фт. от него."
         elif 1 < result <= 8:
             mssg += "Смесь становится поглощаемым ядом по выбору Мастера."
         elif 8 < result <= 15:
@@ -217,7 +228,7 @@ class HelperAsk(commands.Cog):
                     " работают как обычно."
         elif result == 100:
             mssg += "Только одно зелье продолжает работать, но его эффект" \
-                    " становится постоянным. Выберите наиболее простой эффект" \
+                    " становится постоянным. Выберите наиболее простой эффект"\
                     " для того, чтобы сделать его постоянным, или же тот," \
                     " который кажется вам наиболее забавным. Например, зелье" \
                     " лечения может увеличить максимум хитов на 4, а масло" \
@@ -262,7 +273,8 @@ class HelperAsk(commands.Cog):
             else:
                 # перевод на русский для соответствия бд
                 asked = "https://translate.yandex.net/api/v1.5/tr." \
-                        "json/translate?lang=en-ru&key=" + API_key + "&text=" + cl_m
+                        "json/translate?lang=en-ru&key=" + API_key +\
+                        "&text=" + cl_m
                 answer = requests.get(asked).json()
                 cl_m = answer["text"][0]
                 n = cl_m[0].upper() + cl_m[1:].lower()
